@@ -23,8 +23,9 @@
 # 1.9 (16/09/2016): Xcode 8 dropped 10.11 SDK, get it from Xcode 7.3.1
 # 2.0 (02/05/2017): Xcode 8 cannot always link i386 for OS X 10.5, use the Xcode 3 linker for this arch too. Force use of legacy assembler with GCC 4.x.
 
-#set -e
-#set -u
+#set -e # Exit immediately if a command exits with a non-zero status
+#set -u # Treat unset variables as an error when substituting.
+#set -x # Print commands and their arguments as they are executed.
 
 compilers=0
 osx104=0
@@ -35,56 +36,76 @@ osx108=0
 osx109=0
 osx1010=0
 osx1011=0
+gotoption=0
+error=0
 
-case $1 in
-    -compilers)
-        compilers=1
-        shift
-        ;;
-    -osx104)
-        osx104=1
-        shift
-        ;;
-    -osx105)
-        osx105=1
-        shift
-        ;;
-    -osx106)
-        osx106=1
-        shift
-        ;;
-    -osx107)
-        osx107=1
-        shift
-        ;;
-    -osx108)
-        osx108=1
-        shift
-        ;;
-    -osx109)
-        osx109=1
-        shift
-        ;;
-    -osx1010)
-        osx1010=1
-        shift
-        ;;
-    -osx1011)
-        osx1011=1
-        shift
-        ;;
-    *)
-        compilers=1
-        osx104=1
-        osx105=1
-        osx106=1
-        osx107=1
-        osx108=1
-        osx109=1
-        osx1010=1
-        osx1011=1
-        ;;
-esac
+while [[ $error = 0 ]] && [[ $# -gt 1 ]]; do
+
+    case $1 in
+        -compilers)
+            compilers=1
+            gotoption=1
+            shift
+            ;;
+        -osx104)
+            osx104=1
+            gotoption=1
+            shift
+            ;;
+        -osx105)
+            osx105=1
+            gotoption=1
+            shift
+            ;;
+        -osx106)
+            osx106=1
+            gotoption=1
+            shift
+            ;;
+        -osx107)
+            osx107=1
+            gotoption=1
+            shift
+            ;;
+        -osx108)
+            osx108=1
+            gotoption=1
+            shift
+            ;;
+        -osx109)
+            osx109=1
+            gotoption=1
+            shift
+            ;;
+        -osx1010)
+            osx1010=1
+            gotoption=1
+            shift
+            ;;
+        -osx1011)
+            osx1011=1
+            gotoption=1
+            shift
+            ;;
+        *)
+            # unknown option or spurious arg
+            error=1
+            ;;
+    esac
+
+done
+
+if [ $gotoption = 0 ]; then
+    compilers=1
+    osx104=1
+    osx105=1
+    osx106=1
+    osx107=1
+    osx108=1
+    osx109=1
+    osx1010=1
+    osx1011=1
+fi
 
 if [ $# != 1 ]; then
     #     ################################################################################ 80 cols
@@ -181,9 +202,9 @@ case $1 in
             echo "*** you should download Xcode 3.2.6. Login to:"
             echo " https://developer.apple.com/downloads/"
             echo "then download from:"
-            echo " http://developer.apple.com/devcenter/download.action?path=/Developer_Tools/xcode_3.2.6_and_ios_sdk_4.3__final/xcode_3.2.6_and_ios_sdk_4.3.dmg"
+            echo " https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/xcode_3.2.6_and_ios_sdk_4.3__final/xcode_3.2.6_and_ios_sdk_4.3.dmg"
             echo "or"
-            echo " http://adcdownload.apple.com/Developer_Tools/xcode_3.2.6_and_ios_sdk_4.3__final/xcode_3.2.6_and_ios_sdk_4.3.dmg"
+            echo " https://adcdownload.apple.com/Developer_Tools/xcode_3.2.6_and_ios_sdk_4.3__final/xcode_3.2.6_and_ios_sdk_4.3.dmg"
             echo "and then run this script from within the same directory as the downloaded file"
             missingdmg=1
         fi
@@ -193,9 +214,9 @@ case $1 in
             echo "then download from:"
             echo " https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/xcode_4.6.3/xcode4630916281a.dmg"
             echo "or"
-            echo " http://adcdownload.apple.com/Developer_Tools/xcode_4.6.3/xcode4630916281a.dmg"
+            echo " https://adcdownload.apple.com/Developer_Tools/xcode_4.6.3/xcode4630916281a.dmg"
             echo "and then run this script from within the same directory as the downloaded file"
-            exit
+            missingdmg=1
         fi
         if [ "$xc5" = 1 ] && [ ! -f xcode_5.1.1.dmg ]; then
             echo "*** you should download Xcode 5.1.1. Login to:"
@@ -203,7 +224,7 @@ case $1 in
             echo "then download from:"
             echo " https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/xcode_5.1.1/xcode_5.1.1.dmg"
             echo "or"
-            echo " http://adcdownload.apple.com/Developer_Tools/xcode_5.1.1/xcode_5.1.1.dmg"
+            echo " https://adcdownload.apple.com/Developer_Tools/xcode_5.1.1/xcode_5.1.1.dmg"
             echo "and then run this script from within the same directory as the downloaded file"
             missingdmg=1
         fi
@@ -211,9 +232,9 @@ case $1 in
             echo "*** you should download Xcode 6.4. Login to:"
             echo " https://developer.apple.com/downloads/"
             echo "then download from:"
-            echo " http://developer.apple.com/devcenter/download.action?path=/Developer_Tools/Xcode_6.4/Xcode_6.4.dmg"
+            echo " https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/Xcode_6.4/Xcode_6.4.dmg"
             echo "or"
-            echo " http://adcdownload.apple.com/Developer_Tools/Xcode_6.4/Xcode_6.4.dmg"
+            echo " https://adcdownload.apple.com/Developer_Tools/Xcode_6.4/Xcode_6.4.dmg"
             echo "and then run this script from within the same directory as the downloaded file"
             missingdmg=1
         fi
@@ -221,9 +242,9 @@ case $1 in
             echo "*** you should download Xcode 7.3.1. Login to:"
             echo " https://developer.apple.com/downloads/"
             echo "then download from:"
-            echo " http://developer.apple.com/devcenter/download.action?path=/Developer_Tools/Xcode_7.3.1/Xcode_7.3.1.dmg"
+            echo " https://developer.apple.com/devcenter/download.action?path=/Developer_Tools/Xcode_7.3.1/Xcode_7.3.1.dmg"
             echo "or"
-            echo " http://adcdownload.apple.com/Developer_Tools/Xcode_7.3.1/Xcode_7.3.1.dmg"
+            echo " https://adcdownload.apple.com/Developer_Tools/Xcode_7.3.1/Xcode_7.3.1.dmg"
             echo "and then run this script from within the same directory as the downloaded file"
             missingdmg=1
         fi
@@ -284,7 +305,36 @@ case $1 in
             rm -rf /tmp/XC3
 
             if [ "$osx104" = 1 ] || [ "$osx105" = 1 ]; then
-                cat > /tmp/hashtable.patch <<EOF
+                # use the latest version of the hashtable include, as recommended by:
+                # http://wiki.inkscape.org/wiki/index.php/HashtableFixOSX
+                # http://permalink.gmane.org/gmane.comp.graphics.inkscape.devel/32966
+                # The version from gcc 4.0.4 fixes these four bugs:
+                #
+                # GCC Bugzilla Bug 23053
+                # Const-correctness issue in TR1 hashtable
+                # <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=23053>
+                #
+                # GCC Bugzilla Bug 23465
+                # Assignment fails on TR1 unordered containers
+                # <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=23465>
+                #
+                # GCC Bugzilla Bug 24054
+                # std::tr1::unordered_map's erase does not seem to return a value
+                # <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=24054>
+                #
+                # GCC Bugzilla Bug 24064
+                # tr1::unordered_map seems to seg-fault when caching hash values
+                # <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=24064>
+
+                # see also:
+                # http://wayback.archive.org/web/20100810175143/http://mohri-lt.cs.nyu.edu:80/twiki/bin/view/FST/CompilingOnMacOSX
+                # (only fixes GCC Bugzilla Bug 23465)
+
+                #curl -A 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6' 'https://gcc.gnu.org/viewcvs/gcc/branches/gcc-4_0-branch/libstdc%2B%2B-v3/include/tr1/hashtable?revision=95538&view=co' -o hashtable-gcc-4.0.0
+                #curl -A 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/536.6 (KHTML, like Gecko) Chrome/20.0.1090.0 Safari/536.6' 'https://gcc.gnu.org/viewcvs/gcc/branches/gcc-4_0-branch/libstdc%2B%2B-v3/include/tr1/hashtable?revision=104939&view=co' -o hashtable-gcc-4.0.4
+                if false; then
+                    # older version of the patch, for the record (only fixes 23053 and 23465)
+                    cat > /tmp/hashtable.patch <<EOF
 --- hashtable.orig	2015-09-01 14:43:32.000000000 +0200
 +++ hashtable	2010-09-03 22:41:42.000000000 +0200
 @@ -860,7 +860,7 @@
@@ -318,21 +368,33 @@ case $1 in
    for ( ; p ; p = p->m_next)
      if (this->compare (k, code, p))
 EOF
+                fi
             fi
             
             if [ "$osx104" = 1 ]; then
                 test -d /tmp/XC3-10.4 && rm -rf /tmp/XC3-10.4
                 pkgutil --expand "$MNTDIR/Xcode and iOS SDK/Packages/MacOSX10.4.Universal.pkg" /tmp/XC3-10.4
                 (cd /tmp/XC3-10.4 || exit; gzip -dc Payload  |cpio -id --quiet SDKs/MacOSX10.4u.sdk)
+                SDKROOT=/tmp/XC3-10.4/SDKs/MacOSX10.4u.sdk
                 # should we install more than these? (fixed includes?)
                 # Add links to libstdc++ so that "g++-4.0 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4" works
-                ln -s ../../../i686-apple-darwin10/4.0.1/libstdc++.dylib /tmp/XC3-10.4/SDKs/MacOSX10.4u.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/libstdc++.dylib
+                ln -s ../../../i686-apple-darwin10/4.0.1/libstdc++.dylib $SDKROOT/usr/lib/gcc/i686-apple-darwin10/4.0.1/libstdc++.dylib
                 # Add links to libstdc++ so that "clang++ -stdlib=libstdc++ -isysroot /Developer/SDKs/MacOSX10.4u.sdk -Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4" works
-                ln -s libstdc++.6.dylib /tmp/XC3-10.4/SDKs/MacOSX10.4u.sdk/usr/lib/libstdc++.dylib
+                ln -s libstdc++.6.dylib $SDKROOT/usr/lib/libstdc++.dylib
                 # Fix tr1/hashtable
                 # see http://www.openfst.org/twiki/bin/view/FST/CompilingOnMacOSX https://gcc.gnu.org/ml/libstdc++/2005-08/msg00017.html https://gcc.gnu.org/bugzilla/show_bug.cgi?id=23053
                 # in SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/tr1/hashtable
-                (cd /tmp/XC3-10.4/SDKs/MacOSX10.4u.sdk/usr/include/c++/4.0.0/tr1 || exit; patch -p0 -d. < /tmp/hashtable.patch)
+                #(cd $SDKROOT/usr/include/c++/4.0.0/tr1 || exit; patch -p0 -d. < /tmp/hashtable.patch)
+                mv $SDKROOT/usr/include/c++/4.0.0/tr1/hashtable $SDKROOT/usr/include/c++/4.0.0/tr1/hashtable.orig
+                cp hashtable-gcc-4.0.4 $SDKROOT/usr/include/c++/4.0.0/tr1/hashtable
+
+                # Add links for compatibility with GCC 4.2
+                ln -s 4.0.1 $SDKROOT/usr/lib/gcc/i686-apple-darwin10/4.2.1
+                ln -s 4.0.1 $SDKROOT/usr/lib/gcc/powerpc-apple-darwin10/4.2.1
+                ln -s 4.0.1 $SDKROOT/usr/lib/i686-apple-darwin10/4.2.1
+                ln -s 4.0.1 $SDKROOT/usr/lib/powerpc-apple-darwin10/4.2.1
+                ln -s 4.0.0 $SDKROOT/usr/include/c++/4.2.1
+
                 ( (cd /tmp/XC3-10.4 || exit; tar cf - SDKs/MacOSX10.4u.sdk) |gzip -c > Xcode104SDK.tar.gz) && echo "*** Created Xcode104SDK.tar.gz in directory $(pwd)"
                 rm -rf /tmp/XC3-10.4
             fi
@@ -341,23 +403,27 @@ EOF
                 test -d /tmp/XC3-10.5 && rm -rf /tmp/XC3-10.5
                 pkgutil --expand "$MNTDIR/Xcode and iOS SDK/Packages/MacOSX10.5.pkg" /tmp/XC3-10.5
                 (cd /tmp/XC3-10.5 || exit; gzip -dc Payload  |cpio -id --quiet SDKs/MacOSX10.5.sdk)
+                SDKROOT=/tmp/XC3-10.5/SDKs/MacOSX10.5.sdk
                 # should we install more than these? (fixed includes?)
                 # Add links to libstdc++ so that "g++-4.0 -isysroot /Developer/SDKs/MacOSX10.5.sdk -Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" works
-                ln -s ../../../i686-apple-darwin10/4.0.1/libstdc++.dylib /tmp/XC3-10.5/SDKs/MacOSX10.5.sdk/usr/lib/gcc/i686-apple-darwin10/4.0.1/libstdc++.dylib
-                ln -s ../../../i686-apple-darwin10/4.2.1/libstdc++.dylib /tmp/XC3-10.5/SDKs/MacOSX10.5.sdk/usr/lib/gcc/i686-apple-darwin10/4.2.1/libstdc++.dylib
+                ln -s ../../../i686-apple-darwin10/4.0.1/libstdc++.dylib $SDKROOT/usr/lib/gcc/i686-apple-darwin10/4.0.1/libstdc++.dylib
+                ln -s ../../../i686-apple-darwin10/4.2.1/libstdc++.dylib $SDKROOT/usr/lib/gcc/i686-apple-darwin10/4.2.1/libstdc++.dylib
                 # Add links to libstdc++ so that "clang++ -stdlib=libstdc++ -isysroot /Developer/SDKs/MacOSX10.5.sdk -Wl,-syslibroot,/Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" works
-                ln -s libstdc++.6.dylib /tmp/XC3-10.5/SDKs/MacOSX10.5.sdk/usr/lib/libstdc++.dylib
+                ln -s libstdc++.6.dylib $SDKROOT/usr/lib/libstdc++.dylib
                 # fix AvailabilityInternal.h (see https://trac.macports.org/wiki/LeopardSDKFixes)
-                sed -i.orig -e 's/define __MAC_OS_X_VERSION_MAX_ALLOWED __MAC_10_6/define __MAC_OS_X_VERSION_MAX_ALLOWED 1058/' /tmp/XC3-10.5/SDKs/MacOSX10.5.sdk/usr/include/AvailabilityInternal.h
+                sed -i.orig -e 's/define __MAC_OS_X_VERSION_MAX_ALLOWED __MAC_10_6/define __MAC_OS_X_VERSION_MAX_ALLOWED 1058/' $SDKROOT/usr/include/AvailabilityInternal.h
                 # Fix tr1/hashtable
                 # see http://www.openfst.org/twiki/bin/view/FST/CompilingOnMacOSX https://gcc.gnu.org/ml/libstdc++/2005-08/msg00017.html https://gcc.gnu.org/bugzilla/show_bug.cgi?id=23053
                 # in SDKs/MacOSX10.5.sdk/usr/include/c++/4.0.0/tr1/hashtable
                 # this also affects g++-4.2, since usr/include/c++/4.2.1 links to usr/include/c++/4.0.0
-                (cd /tmp/XC3-10.5/SDKs/MacOSX10.5.sdk/usr/include/c++/4.0.0/tr1 || exit; patch -p0 -d. < /tmp/hashtable.patch)
+                #(cd $SDKROOT/usr/include/c++/4.0.0/tr1 || exit; patch -p0 -d. < /tmp/hashtable.patch)
+                mv $SDKROOT/usr/include/c++/4.0.0/tr1/hashtable $SDKROOT/usr/include/c++/4.0.0/tr1/hashtable.orig
+                cp hashtable-gcc-4.0.4 $SDKROOT/usr/include/c++/4.0.0/tr1/hashtable
             fi
 
             if [ "$osx104" = 1 ] || [ "$osx105" = 1 ]; then
-                rm /tmp/hashtable.patch
+                true
+                #rm /tmp/hashtable.patch
             fi
 
             if [ $osx105 = 1 ] || [ $osx106 = 1 ]; then
@@ -556,8 +622,10 @@ AS_RESULT=255
 if [ "\$ARCH_FOUND" -eq '1' ]; then
         if [ -x "\$AS_DIR/../../../as/\$ARCH/as" ]; then
                 AS="\$AS_DIR/../../../as/\$ARCH/as"
+        elif [ -x "\$AS_DIR/../../../../../libexec/as/\$ARCH/as" ]; then
+                AS="\$AS_DIR/../../../../../libexec/as/\$ARCH/as"
         else
-                echo "Error: cannot find as for \$ARCH in \$AS_DIR/../../../as/\$ARCH"
+                echo "Error: cannot find as for \$ARCH in \$AS_DIR/../../../as/\$ARCH or \$AS_DIR/../../../../../libexec/as/\$ARCH"
                 exit 1
         fi
 
@@ -1076,7 +1144,7 @@ SPEC_EOF
                     rm $GCCLINKDIR/bin/$b
                 fi
             done
-            for b in cpp-4.2.1 gcc-4.0.1 g++-4.0.1 gcc-4.2.1 g++-4.2.1 llvm-g++-4.2 llvm-gcc-4.2; do 
+            for b in cpp-4.2.1 gcc-4.0.1 g++-4.0.1 gcc-4.2.1 g++-4.2.1 llvm-g++-4.2 llvm-gcc-4.2; do
                 if [ -L $GCCLINKDIR/bin/i686-apple-darwin10-$b ] && [ ! -e $GCCLINKDIR/bin/i686-apple-darwin10-$b ]; then
                     rm $GCCLINKDIR/bin/i686-apple-darwin10-$b
                 fi
